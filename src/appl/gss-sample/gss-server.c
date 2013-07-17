@@ -67,6 +67,8 @@
 #include <strings.h>
 #endif
 
+#include <signal.h>
+
 static OM_uint32
 enumerateAttributes(OM_uint32 *minor, gss_name_t name, int noisy);
 static OM_uint32
@@ -647,6 +649,12 @@ worker_bee(void *param)
 #endif
 }
 
+static void
+sigint_handler(int sig)
+{
+    exit(0);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -738,6 +746,9 @@ main(int argc, char **argv)
 
     InitHandles();
 #endif
+
+    if (signal(SIGINT, sigint_handler) == SIG_ERR)
+         fprintf(stderr, "signal() call failed\n");
 
     service_name = *argv;
 
